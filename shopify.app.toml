@@ -1,0 +1,36 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "05fefc9fd48771932355eb2d9654e571"
+name = "tay-test1"
+handle = "tay-test1"
+application_url = "https://proud-dinner-contrary-steve.trycloudflare.com"
+embedded = true
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = true
+
+[webhooks]
+api_version = "2024-10"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_content,write_products"
+
+[auth]
+redirect_urls = [
+  "https://proud-dinner-contrary-steve.trycloudflare.com/auth/callback",
+  "https://proud-dinner-contrary-steve.trycloudflare.com/auth/shopify/callback",
+  "https://proud-dinner-contrary-steve.trycloudflare.com/api/auth/callback"
+]
+
+[pos]
+embedded = false
