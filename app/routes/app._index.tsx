@@ -12,320 +12,175 @@ import {
   List,
   Link,
   InlineStack,
+  Grid,
+  ButtonGroup,
+  Divider,
 } from "@shopify/polaris";
-import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
+import { TitleBar } from "@shopify/app-bridge-react";
+import { ChevronLeftIcon, ChevronRightIcon } from '@shopify/polaris-icons';
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
-
   return null;
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
-  const color = ["Red", "Orange", "Yellow", "Green"][
-    Math.floor(Math.random() * 4)
-  ];
-  const response = await admin.graphql(
-    `#graphql
-      mutation populateProduct($product: ProductCreateInput!) {
-        productCreate(product: $product) {
-          product {
-            id
-            title
-            handle
-            status
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  price
-                  barcode
-                  createdAt
-                }
-              }
-            }
-          }
-        }
-      }`,
-    {
-      variables: {
-        product: {
-          title: `${color} Snowboard`,
-        },
-      },
-    },
-  );
-  const responseJson = await response.json();
 
-  const product = responseJson.data!.productCreate!.product!;
-  const variantId = product.variants.edges[0]!.node!.id!;
-
-  const variantResponse = await admin.graphql(
-    `#graphql
-    mutation shopifyRemixTemplateUpdateVariant($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
-      productVariantsBulkUpdate(productId: $productId, variants: $variants) {
-        productVariants {
-          id
-          price
-          barcode
-          createdAt
-        }
-      }
-    }`,
-    {
-      variables: {
-        productId: product.id,
-        variants: [{ id: variantId, price: "100.00" }],
-      },
-    },
-  );
-
-  const variantResponseJson = await variantResponse.json();
-
-  return {
-    product: responseJson!.data!.productCreate!.product,
-    variant:
-      variantResponseJson!.data!.productVariantsBulkUpdate!.productVariants,
-  };
-};
 
 export default function Index() {
-  const fetcher = useFetcher<typeof action>();
-
-  const shopify = useAppBridge();
-  const isLoading =
-    ["loading", "submitting"].includes(fetcher.state) &&
-    fetcher.formMethod === "POST";
-  const productId = fetcher.data?.product?.id.replace(
-    "gid://shopify/Product/",
-    "",
-  );
-
-  useEffect(() => {
-    if (productId) {
-      shopify.toast.show("Product created");
-    }
-  }, [productId, shopify]);
-  const generateProduct = () => fetcher.submit({}, { method: "POST" });
-
   return (
     <Page>
-      <TitleBar title="Remix app template">
-        <button variant="primary" onClick={generateProduct}>
-          Generate a product
-        </button>
-      </TitleBar>
+      <TitleBar title="Dashboard" />
       <BlockStack gap="500">
         <Layout>
+          {/* Setup Guide Section */}
           <Layout.Section>
             <Card>
-              <BlockStack gap="500">
+              <BlockStack gap="400">
                 <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
-                    Congrats on creating a new Shopify app 🎉
+                    Setup Guide
                   </Text>
                   <Text variant="bodyMd" as="p">
-                    This embedded app template uses{" "}
-                    <Link
-                      url="https://shopify.dev/docs/apps/tools/app-bridge"
-                      target="_blank"
-                      removeUnderline
-                    >
-                      App Bridge
-                    </Link>{" "}
-                    interface examples like an{" "}
-                    <Link url="/app/additional" removeUnderline>
-                      additional page in the app nav
-                    </Link>
-                    , as well as an{" "}
-                    <Link
-                      url="https://shopify.dev/docs/api/admin-graphql"
-                      target="_blank"
-                      removeUnderline
-                    >
-                      Admin GraphQL
-                    </Link>{" "}
-                    mutation demo, to provide a starting point for app
-                    development.
+                    Follow these steps to set up your app properly
                   </Text>
                 </BlockStack>
                 <BlockStack gap="200">
-                  <Text as="h3" variant="headingMd">
-                    Get started with products
-                  </Text>
-                  <Text as="p" variant="bodyMd">
-                    Generate a product with GraphQL and get the JSON output for
-                    that product. Learn more about the{" "}
-                    <Link
-                      url="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
-                      target="_blank"
-                      removeUnderline
-                    >
-                      productCreate
-                    </Link>{" "}
-                    mutation in our API references.
-                  </Text>
-                </BlockStack>
-                <InlineStack gap="300">
-                  <Button loading={isLoading} onClick={generateProduct}>
-                    Generate a product
-                  </Button>
-                  {fetcher.data?.product && (
-                    <Button
-                      url={`shopify:admin/products/${productId}`}
-                      target="_blank"
-                      variant="plain"
-                    >
-                      View product
-                    </Button>
-                  )}
-                </InlineStack>
-                {fetcher.data?.product && (
-                  <>
-                    <Text as="h3" variant="headingMd">
-                      {" "}
-                      productCreate mutation
-                    </Text>
-                    <Box
-                      padding="400"
-                      background="bg-surface-active"
-                      borderWidth="025"
-                      borderRadius="200"
-                      borderColor="border"
-                      overflowX="scroll"
-                    >
-                      <pre style={{ margin: 0 }}>
-                        <code>
-                          {JSON.stringify(fetcher.data.product, null, 2)}
-                        </code>
-                      </pre>
-                    </Box>
-                    <Text as="h3" variant="headingMd">
-                      {" "}
-                      productVariantsBulkUpdate mutation
-                    </Text>
-                    <Box
-                      padding="400"
-                      background="bg-surface-active"
-                      borderWidth="025"
-                      borderRadius="200"
-                      borderColor="border"
-                      overflowX="scroll"
-                    >
-                      <pre style={{ margin: 0 }}>
-                        <code>
-                          {JSON.stringify(fetcher.data.variant, null, 2)}
-                        </code>
-                      </pre>
-                    </Box>
-                  </>
-                )}
-              </BlockStack>
-            </Card>
-          </Layout.Section>
-          <Layout.Section variant="oneThird">
-            <BlockStack gap="500">
-              <Card>
-                <BlockStack gap="200">
-                  <Text as="h2" variant="headingMd">
-                    App template specs
-                  </Text>
-                  <BlockStack gap="200">
-                    <InlineStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        Framework
-                      </Text>
-                      <Link
-                        url="https://remix.run"
-                        target="_blank"
-                        removeUnderline
-                      >
-                        Remix
-                      </Link>
-                    </InlineStack>
-                    <InlineStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        Database
-                      </Text>
-                      <Link
-                        url="https://www.prisma.io/"
-                        target="_blank"
-                        removeUnderline
-                      >
-                        Prisma
-                      </Link>
-                    </InlineStack>
-                    <InlineStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        Interface
-                      </Text>
-                      <span>
-                        <Link
-                          url="https://polaris.shopify.com"
-                          target="_blank"
-                          removeUnderline
-                        >
-                          Polaris
-                        </Link>
-                        {", "}
-                        <Link
-                          url="https://shopify.dev/docs/apps/tools/app-bridge"
-                          target="_blank"
-                          removeUnderline
-                        >
-                          App Bridge
-                        </Link>
-                      </span>
-                    </InlineStack>
-                    <InlineStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        API
-                      </Text>
-                      <Link
-                        url="https://shopify.dev/docs/api/admin-graphql"
-                        target="_blank"
-                        removeUnderline
-                      >
-                        GraphQL API
-                      </Link>
-                    </InlineStack>
-                  </BlockStack>
-                </BlockStack>
-              </Card>
-              <Card>
-                <BlockStack gap="200">
-                  <Text as="h2" variant="headingMd">
-                    Next steps
-                  </Text>
-                  <List>
+                  <List type="number">
                     <List.Item>
-                      Build an{" "}
-                      <Link
-                        url="https://shopify.dev/docs/apps/getting-started/build-app-example"
-                        target="_blank"
-                        removeUnderline
-                      >
-                        {" "}
-                        example app
-                      </Link>{" "}
-                      to get started
+                      <InlineStack gap="200" align="start">
+                        <Text as="span" variant="bodyMd" fontWeight="bold">
+                          Install the app
+                        </Text>
+                        <Text as="span" variant="bodyMd">
+                          Install our app from the Shopify App Store and approve the necessary permissions
+                        </Text>
+                      </InlineStack>
                     </List.Item>
                     <List.Item>
-                      Explore Shopify’s API with{" "}
-                      <Link
-                        url="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
-                        target="_blank"
-                        removeUnderline
-                      >
-                        GraphiQL
-                      </Link>
+                      <InlineStack gap="200" align="start">
+                        <Text as="span" variant="bodyMd" fontWeight="bold">
+                          Configure your settings
+                        </Text>
+                        <Text as="span" variant="bodyMd">
+                          Go to Settings page and customize the app according to your needs
+                        </Text>
+                      </InlineStack>
+                    </List.Item>
+                    <List.Item>
+                      <InlineStack gap="200" align="start">
+                        <Text as="span" variant="bodyMd" fontWeight="bold">
+                          Test the functionality
+                        </Text>
+                        <Text as="span" variant="bodyMd">
+                          Try out the main features to ensure everything works as expected
+                        </Text>
+                      </InlineStack>
                     </List.Item>
                   </List>
                 </BlockStack>
-              </Card>
-            </BlockStack>
+              </BlockStack>
+            </Card>
+          </Layout.Section>
+
+          {/* What's New Section */}
+          <Layout.Section>
+            <Card>
+              <BlockStack gap="400">
+                <BlockStack gap="200">
+                  <InlineStack align="space-between">
+                    <BlockStack gap="200">
+                      <Text as="h2" variant="headingMd">
+                        What's new
+                      </Text>
+                      <Text variant="bodyMd" as="p" tone="subdued">
+                        Keep you updated on new features information.
+                      </Text>
+                    </BlockStack>
+                    <ButtonGroup>
+                      <Button icon={ChevronLeftIcon} disabled />
+                      <Button icon={ChevronRightIcon} />
+                    </ButtonGroup>
+                  </InlineStack>
+                </BlockStack>
+                <Grid>
+                  {/* Import Reviews Card */}
+                  <Grid.Cell columnSpan={{xs: 6, sm: 4, md: 4, lg: 4}}>
+                    <Card>
+                      <BlockStack gap="400">
+                        <img 
+                          src="/images/import-reviews.png" 
+                          alt="Import reviews from everywhere"
+                          style={{width: '100%', height: 'auto', borderRadius: '8px'}}
+                        />
+                        <BlockStack gap="200">
+                          <Text as="h3" variant="headingMd">
+                            Import reviews from everywhere
+                          </Text>
+                          <Text as="p" variant="bodyMd">
+                            Amazon, eBay, AliExpress, Temu, Etsy, and more. Now you can effortlessly get high-quality reviews from any website. More social proof. More sales.
+                          </Text>
+                        </BlockStack>
+                        <InlineStack align="space-between">
+                          <Button variant="primary">Try it now</Button>
+                          <Text as="span" variant="bodyMd" tone="subdued">April 03, 2025</Text>
+                        </InlineStack>
+                      </BlockStack>
+                    </Card>
+                  </Grid.Cell>
+
+                  {/* Widget Customization Card */}
+                  <Grid.Cell columnSpan={{xs: 6, sm: 4, md: 4, lg: 4}}>
+                    <Card>
+                      <BlockStack gap="400">
+                        <img 
+                          src="/images/widget-customization.png" 
+                          alt="Smarter review widget customization"
+                          style={{width: '100%', height: 'auto', borderRadius: '8px'}}
+                        />
+                        <BlockStack gap="200">
+                          <Text as="h3" variant="headingMd">
+                            Smarter review widget customization
+                          </Text>
+                          <Text as="p" variant="bodyMd">
+                            Click directly on any part of the sample widget to instantly find and edit that design element. Faster styling, easier control—with zero guesswork.
+                          </Text>
+                        </BlockStack>
+                        <InlineStack align="space-between">
+                          <Button variant="primary">Try it now</Button>
+                          <Text as="span" variant="bodyMd" tone="subdued">Mar 31, 2025</Text>
+                        </InlineStack>
+                      </BlockStack>
+                    </Card>
+                  </Grid.Cell>
+
+                  {/* Global Settings Card */}
+                  <Grid.Cell columnSpan={{xs: 6, sm: 4, md: 4, lg: 4}}>
+                    <Card>
+                      <BlockStack gap="400">
+                        <img 
+                          src="/images/global-settings.png" 
+                          alt="Global settings for all reviews"
+                          style={{width: '100%', height: 'auto', borderRadius: '8px'}}
+                        />
+                        <BlockStack gap="200">
+                          <Text as="h3" variant="headingMd">
+                            Global settings for all reviews
+                          </Text>
+                          <Text as="p" variant="bodyMd">
+                            Set it once, sync it everywhere. Control font, size, color, branding style, and more across all your widgets. Save time and keep your store consistent.
+                          </Text>
+                        </BlockStack>
+                        <InlineStack align="space-between">
+                          <Button variant="primary">Try it now</Button>
+                          <Text as="span" variant="bodyMd" tone="subdued">Mar 30, 2025</Text>
+                        </InlineStack>
+                      </BlockStack>
+                    </Card>
+                  </Grid.Cell>
+                </Grid>
+              </BlockStack>
+            </Card>
           </Layout.Section>
         </Layout>
       </BlockStack>
