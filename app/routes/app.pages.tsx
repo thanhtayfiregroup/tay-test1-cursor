@@ -279,7 +279,7 @@ export default function Pages() {
                   {rowMarkup}
                 </IndexTable>
 
-                <div style={{ padding: "16px", display: "flex", justifyContent: "center" }}>
+                <div style={{ padding: "16px", display: "flex", justifyContent: "flex-start" }}>
                   <Pagination
                     hasPrevious={pages.pageInfo.hasPreviousPage}
                     hasNext={pages.pageInfo.hasNextPage}
