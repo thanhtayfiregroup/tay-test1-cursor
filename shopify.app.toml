@@ -3,7 +3,7 @@
 client_id = "05fefc9fd48771932355eb2d9654e571"
 name = "tay-test1"
 handle = "tay-test1"
-application_url = "https://percentage-williams-uri-is.trycloudflare.com"
+application_url = "https://precipitation-ct-discussing-birds.trycloudflare.com"
 embedded = true
 
 [build]
@@ -27,9 +27,9 @@ scopes = "read_content,write_products"
 
 [auth]
 redirect_urls = [
-  "https://percentage-williams-uri-is.trycloudflare.com/auth/callback",
-  "https://percentage-williams-uri-is.trycloudflare.com/auth/shopify/callback",
-  "https://percentage-williams-uri-is.trycloudflare.com/api/auth/callback"
+  "https://precipitation-ct-discussing-birds.trycloudflare.com/auth/callback",
+  "https://precipitation-ct-discussing-birds.trycloudflare.com/auth/shopify/callback",
+  "https://precipitation-ct-discussing-birds.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

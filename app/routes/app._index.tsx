@@ -16,7 +16,7 @@ import {
   ButtonGroup,
   Divider,
 } from "@shopify/polaris";
-import { TitleBar } from "@shopify/app-bridge-react";
+import { Provider, TitleBar } from "@shopify/app-bridge-react";
 import { ChevronLeftIcon, ChevronRightIcon } from '@shopify/polaris-icons';
 import { authenticate } from "../shopify.server";
 
@@ -25,12 +25,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return null;
 };
 
-
-
 export default function Index() {
   return (
-    <Page>
-      <TitleBar title="Dashboard" />
+    <Page title="Dashboard">
       <BlockStack gap="500">
         <Layout>
           {/* Setup Guide Section */}
@@ -104,15 +101,10 @@ export default function Index() {
                   </InlineStack>
                 </BlockStack>
                 <Grid>
-                  {/* Import Reviews Card */}
+                  {/* Feature Cards */}
                   <Grid.Cell columnSpan={{xs: 6, sm: 4, md: 4, lg: 4}}>
                     <Card>
                       <BlockStack gap="400">
-                        <img 
-                          src="/images/import-reviews.png" 
-                          alt="Import reviews from everywhere"
-                          style={{width: '100%', height: 'auto', borderRadius: '8px'}}
-                        />
                         <BlockStack gap="200">
                           <Text as="h3" variant="headingMd">
                             Import reviews from everywhere
@@ -129,15 +121,9 @@ export default function Index() {
                     </Card>
                   </Grid.Cell>
 
-                  {/* Widget Customization Card */}
                   <Grid.Cell columnSpan={{xs: 6, sm: 4, md: 4, lg: 4}}>
                     <Card>
                       <BlockStack gap="400">
-                        <img 
-                          src="/images/widget-customization.png" 
-                          alt="Smarter review widget customization"
-                          style={{width: '100%', height: 'auto', borderRadius: '8px'}}
-                        />
                         <BlockStack gap="200">
                           <Text as="h3" variant="headingMd">
                             Smarter review widget customization
@@ -154,15 +140,9 @@ export default function Index() {
                     </Card>
                   </Grid.Cell>
 
-                  {/* Global Settings Card */}
                   <Grid.Cell columnSpan={{xs: 6, sm: 4, md: 4, lg: 4}}>
                     <Card>
                       <BlockStack gap="400">
-                        <img 
-                          src="/images/global-settings.png" 
-                          alt="Global settings for all reviews"
-                          style={{width: '100%', height: 'auto', borderRadius: '8px'}}
-                        />
                         <BlockStack gap="200">
                           <Text as="h3" variant="headingMd">
                             Global settings for all reviews
