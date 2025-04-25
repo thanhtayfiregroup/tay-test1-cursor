@@ -20,6 +20,7 @@ import {
   Badge,
   EmptySearchResult,
   LegacyCard,
+  Thumbnail,
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 
@@ -36,6 +37,9 @@ interface Product {
       currencyCode: string;
     };
   };
+  featuredImage: {
+    url: string;
+  } | null;
 }
 
 interface ProductsData {
@@ -123,6 +127,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
             totalInventory
             createdAt
             updatedAt
+            featuredImage {
+              url
+            }
             priceRangeV2 {
               minVariantPrice {
                 amount
@@ -174,6 +181,7 @@ export default function Products() {
         totalInventory,
         createdAt,
         priceRangeV2,
+        featuredImage,
       }: Product,
       index: number,
     ) => (
@@ -184,9 +192,16 @@ export default function Products() {
         position={index}
       >
         <IndexTable.Cell>
-          <Text variant="bodyMd" fontWeight="bold" as="span">
-            {title}
-          </Text>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Thumbnail
+              source={featuredImage?.url || "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-1_large.png"}
+              alt={title}
+              size="small"
+            />
+            <Text variant="bodyMd" fontWeight="bold" as="span">
+              {title}
+            </Text>
+          </div>
         </IndexTable.Cell>
         <IndexTable.Cell>
           <Badge tone={status === "ACTIVE" ? "success" : "critical"}>
