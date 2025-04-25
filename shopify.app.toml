@@ -3,7 +3,7 @@
 client_id = "05fefc9fd48771932355eb2d9654e571"
 name = "tay-test1"
 handle = "tay-test1"
-application_url = "https://harry-hire-sit-mrs.trycloudflare.com"
+application_url = "https://summit-transport-flood-notify.trycloudflare.com"
 embedded = true
 
 [build]
@@ -27,9 +27,9 @@ scopes = "read_content,read_products,read_publications,read_pages"
 
 [auth]
 redirect_urls = [
-  "https://harry-hire-sit-mrs.trycloudflare.com/auth/callback",
-  "https://harry-hire-sit-mrs.trycloudflare.com/auth/shopify/callback",
-  "https://harry-hire-sit-mrs.trycloudflare.com/api/auth/callback"
+  "https://summit-transport-flood-notify.trycloudflare.com/auth/callback",
+  "https://summit-transport-flood-notify.trycloudflare.com/auth/shopify/callback",
+  "https://summit-transport-flood-notify.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
