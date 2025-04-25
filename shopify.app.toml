@@ -3,7 +3,7 @@
 client_id = "05fefc9fd48771932355eb2d9654e571"
 name = "tay-test1"
 handle = "tay-test1"
-application_url = "https://precipitation-ct-discussing-birds.trycloudflare.com"
+application_url = "https://harry-hire-sit-mrs.trycloudflare.com"
 embedded = true
 
 [build]
@@ -23,13 +23,13 @@ api_version = "2024-10"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_content,write_products"
+scopes = "read_content,read_products,read_publications,read_pages"
 
 [auth]
 redirect_urls = [
-  "https://precipitation-ct-discussing-birds.trycloudflare.com/auth/callback",
-  "https://precipitation-ct-discussing-birds.trycloudflare.com/auth/shopify/callback",
-  "https://precipitation-ct-discussing-birds.trycloudflare.com/api/auth/callback"
+  "https://harry-hire-sit-mrs.trycloudflare.com/auth/callback",
+  "https://harry-hire-sit-mrs.trycloudflare.com/auth/shopify/callback",
+  "https://harry-hire-sit-mrs.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
