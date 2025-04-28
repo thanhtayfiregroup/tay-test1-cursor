@@ -80,6 +80,37 @@ export default function Index() {
             </Card>
           </Layout.Section>
 
+          {/* Quote/Summary Section */}
+          <Layout.Section>
+            <Card>
+              <BlockStack gap="200">
+                <Text as="h2" variant="headingMd">
+                  Overview
+                </Text>
+                <Grid>
+                  <Grid.Cell columnSpan={{xs: 4, sm: 4, md: 4, lg: 4}}>
+                    <BlockStack gap="100">
+                      <Text as="span" variant="bodyMd" tone="subdued">Balance</Text>
+                      <Text as="h3" variant="headingLg" fontWeight="bold">0đ</Text>
+                    </BlockStack>
+                  </Grid.Cell>
+                  <Grid.Cell columnSpan={{xs: 4, sm: 4, md: 4, lg: 4}}>
+                    <BlockStack gap="100">
+                      <Text as="span" variant="bodyMd" tone="subdued">Files</Text>
+                      <Text as="h3" variant="headingLg" fontWeight="bold">0</Text>
+                    </BlockStack>
+                  </Grid.Cell>
+                  <Grid.Cell columnSpan={{xs: 4, sm: 4, md: 4, lg: 4}}>
+                    <BlockStack gap="100">
+                      <Text as="span" variant="bodyMd" tone="subdued">Storage</Text>
+                      <Text as="h3" variant="headingLg" fontWeight="bold">0 MB</Text>
+                    </BlockStack>
+                  </Grid.Cell>
+                </Grid>
+              </BlockStack>
+            </Card>
+          </Layout.Section>
+
           {/* What's New Section */}
           <Layout.Section>
             <Card>
