@@ -42,7 +42,12 @@ interface PagesData {
 
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  if (params.id) {
+    // Đang ở trang chi tiết, không cần fetch danh sách
+    return json({ pages: [] });
+  }
+  // Đang ở trang danh sách, fetch danh sách
   const { admin } = await authenticate.admin(request);
   
   const url = new URL(request.url);
@@ -114,7 +119,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   );
 
   const responseJson = await response.json();
-
   const pages = responseJson.data?.pages || { 
     nodes: [], 
     pageInfo: { 
@@ -208,9 +212,17 @@ export default function Pages() {
           </RemixLink>
         </IndexTable.Cell>
         <IndexTable.Cell>
-          <Text variant="bodyMd" as="span">
+          <div
+            style={{
+              maxWidth: 240,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
+            title={bodySummary || ""}
+          >
             {truncateText(bodySummary || "", 100)}
-          </Text>
+          </div>
         </IndexTable.Cell>
         <IndexTable.Cell>
           <Text variant="bodyMd" as="span">

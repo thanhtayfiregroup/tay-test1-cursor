@@ -117,13 +117,19 @@ export default function PageDetail() {
                 <Box padding="400">
                   <BlockStack gap="400">
                     <Text variant="headingMd" as="h2">Content</Text>
-                    <TextField
-                      label="Page content"
-                      value={page.body}
-                      multiline={6}
-                      autoComplete="off"
-                      readOnly
-                    />
+                    <div
+                      className="page-content-html"
+                      style={{
+                        background: '#f4f4f4',
+                        borderRadius: 8,
+                        padding: 16,
+                        minHeight: 100,
+                        maxHeight: 400,
+                        overflow: 'auto'
+                      }}
+                    >
+                      <div dangerouslySetInnerHTML={{ __html: page.body }} />
+                    </div>
                   </BlockStack>
                 </Box>
               </BlockStack>
