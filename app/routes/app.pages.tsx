@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { json } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react";
+import { useLoaderData, useNavigate, useSearchParams, Link as RemixLink, useMatches, Outlet } from "@remix-run/react";
 import {
   Page,
   Layout,
   Card,
-  Button,
   Text,
   TextField,
   IndexTable,
-  useIndexResourceState,
   Pagination,
   EmptySearchResult,
 } from "@shopify/polaris";
@@ -41,6 +39,8 @@ interface PagesData {
   endCursor: string | null;
   startCursor: string | null;
 }
+
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
@@ -139,10 +139,25 @@ export default function Pages() {
   const [searchValue, setSearchValue] = useState(searchTerm || "");
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const matches = useMatches();
+
+  const isDetail = matches.some(
+    (m) => m.pathname?.startsWith("/app/pages/") && m.params.id
+  );
+
+  if (isDetail) {
+    return <Outlet />;
+  }
 
   const resourceName = {
     singular: "page",
     plural: "pages",
+  };
+
+  const extractIdFromGid = (gid: string): string => {
+    // Format: gid://shopify/Page/103964377130
+    const parts = gid.split('/');
+    return parts[parts.length - 1];
   };
 
   const allNodes = pages?.nodes || [];
@@ -152,12 +167,6 @@ export default function Pages() {
     node.handle.toLowerCase().includes(searchValue.toLowerCase()) ||
     node.bodySummary?.toLowerCase().includes(searchValue.toLowerCase())
   );
-
-  const {
-    selectedResources,
-    allResourcesSelected,
-    handleSelectionChange,
-  } = useIndexResourceState(nodes);
 
   const truncateText = (text: string, maxLength: number) => {
     if (!text) return "";
@@ -180,21 +189,23 @@ export default function Pages() {
         title,
         handle,
         bodySummary,
-        createdAt,
-        updatedAt,
       }: StorePage,
       index: number,
     ) => (
       <IndexTable.Row
         id={id}
         key={id}
-        selected={selectedResources.includes(id)}
         position={index}
       >
         <IndexTable.Cell>
-          <Text variant="bodyMd" fontWeight="bold" as="span">
-            {title}
-          </Text>
+          <RemixLink
+            to={`/app/pages/${extractIdFromGid(id)}`}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <Text variant="bodyMd" fontWeight="bold" as="span">
+              {title}
+            </Text>
+          </RemixLink>
         </IndexTable.Cell>
         <IndexTable.Cell>
           <Text variant="bodyMd" as="span">
@@ -204,22 +215,6 @@ export default function Pages() {
         <IndexTable.Cell>
           <Text variant="bodyMd" as="span">
             {handle}
-          </Text>
-        </IndexTable.Cell>
-        <IndexTable.Cell>
-          <Button
-            variant="plain"
-            external
-            url={`/pages/${handle}`}
-          >
-            View page
-          </Button>
-        </IndexTable.Cell>
-        <IndexTable.Cell>
-          <Text variant="bodyMd" as="span">
-            Created: {formatDate(createdAt)}
-            <br />
-            Updated: {formatDate(updatedAt)}
           </Text>
         </IndexTable.Cell>
       </IndexTable.Row>
@@ -240,8 +235,6 @@ export default function Pages() {
     { title: "Title" },
     { title: "Summary" },
     { title: "Handle" },
-    { title: "Preview" },
-    { title: "Dates" },
   ];
 
   return (
@@ -272,9 +265,8 @@ export default function Pages() {
                 <IndexTable
                   resourceName={resourceName}
                   itemCount={nodes.length}
-                  selectedItemsCount={allResourcesSelected ? "All" : selectedResources.length}
-                  onSelectionChange={handleSelectionChange}
                   headings={headings}
+                  selectable={false}
                 >
                   {rowMarkup}
                 </IndexTable>
